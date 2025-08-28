@@ -2,7 +2,7 @@
 
 **Web app:** [CodeRev](https://coderev.streamlit.app/#code-rev)
 
-A Streamlit app that converts direct, critical review comments into empathetic, constructive, and educational feedback using a generative AI model (Groq by default). Please watch the video tutorial.
+A Streamlit app that converts direct, critical review comments into empathetic, constructive, and educational feedback using a generative AI model (Groq by default). Please watch the [Video Tutorial](https://drive.google.com/file/d/1sXzxiENiMgWCfC0CKpeK3UVWR3FFwVxF/view?usp=sharing).
 
 ---
 
