@@ -18,9 +18,6 @@ A Streamlit app that converts direct, critical review comments into empathetic, 
 * Detects comment severity (harsh / neutral / constructive) and adapts tone.
 * Auto language detection (or manual selection).
 * Downloadable Markdown report.
-* Hackathon scoring rubric panel and a demo self-evaluation widget.
-* Mock Groq client when `groq` SDK or API key is missing (safe demo mode).
-
 ---
 
 ## Quickstart (Local)
