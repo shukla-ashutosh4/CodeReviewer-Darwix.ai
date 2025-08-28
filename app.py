@@ -54,8 +54,8 @@ GroqClientClass = Groq if GroqAvailable else MockGroq
 
 # ------------------- Page config & CSS (improved color scheme) -------------------
 st.set_page_config(
-    page_title="🌟 Empathetic Code Reviewer",
-    page_icon="🤝",
+    page_title="🌟 CodeRev",
+    page_icon="CodeRev.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
