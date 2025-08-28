@@ -369,7 +369,7 @@ with st.sidebar:
 # """)
 #     st.markdown("---")
     st.markdown("## ⚙️ Configuration")
-    api_key = st.text_input("🔑 Groq API Key (optional for demo)", type="password", placeholder="Paste your Groq API key here")
+    api_key = st.text_input("🔑 Groq API Key", type="password", placeholder="Paste your Groq API key here")
     if not GroqAvailable:
         st.warning("`groq` SDK not found in this environment. The app is running in **demo/mock** mode. Install the `groq` package and add your API key for real model responses.")
     st.markdown("---")
@@ -543,23 +543,23 @@ def main():
 
         # --- Rubric scoring widget (helps you demonstrate scoring & innovation) ---
         st.markdown("---")
-        st.markdown("## 🧮 Self-Evaluation (Demo judge panel)")
-        colA, colB = st.columns(2)
-        with colA:
-            f_score = st.slider("Functionality & Correctness (0-25)", 0, 25, 20)
-            ai_score = st.slider("AI Output & Prompting (0-45)", 0, 45, 36)
-        with colB:
-            code_score = st.slider("Code Quality & Documentation (0-20)", 0, 20, 16)
-            innov_score = st.slider("Innovation & Stand Out (0-10)", 0, 10, 6)
+        # st.markdown("## 🧮 Self-Evaluation (Demo judge panel)")
+        # colA, colB = st.columns(2)
+        # with colA:
+        #     f_score = st.slider("Functionality & Correctness (0-25)", 0, 25, 20)
+        #     ai_score = st.slider("AI Output & Prompting (0-45)", 0, 45, 36)
+        # with colB:
+        #     code_score = st.slider("Code Quality & Documentation (0-20)", 0, 20, 16)
+        #     innov_score = st.slider("Innovation & Stand Out (0-10)", 0, 10, 6)
 
-        total = f_score + ai_score + code_score + innov_score
-        st.markdown(f"**Total (weighted)**: <span style='font-weight:800; font-size:20px; color:var(--accent)'> {total} / 100</span>", unsafe_allow_html=True)
-        if total >= 85:
-            st.success("🏆 Excellent — this would score highly in the judging rubric!")
-        elif total >= 65:
-            st.info("👍 Strong — good job, consider adding an extra stand-out feature.")
-        else:
-            st.warning("🔧 Needs work — focus on improving AI output depth and functionality.")
+        # total = f_score + ai_score + code_score + innov_score
+        # st.markdown(f"**Total (weighted)**: <span style='font-weight:800; font-size:20px; color:var(--accent)'> {total} / 100</span>", unsafe_allow_html=True)
+        # if total >= 85:
+        #     st.success("🏆 Excellent — this would score highly in the judging rubric!")
+        # elif total >= 65:
+        #     st.info("👍 Strong — good job, consider adding an extra stand-out feature.")
+        # else:
+        #     st.warning("🔧 Needs work — focus on improving AI output depth and functionality.")
 
 if __name__ == "__main__":
     if 'sample_loaded' not in st.session_state:
