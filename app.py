@@ -4,7 +4,6 @@ import json
 import os
 import re
 import base64
-import time
 from typing import Dict, List
 from datetime import datetime
 from types import SimpleNamespace
@@ -379,28 +378,6 @@ with st.sidebar:
 
 # ------------------- Main UI -------------------
 def main():
-    # -- Splash screen: show logo for first 3 seconds on initial load --
-    if not st.session_state.get('splash_shown', False):
-        splash_container = st.empty()
-        with splash_container.container():
-            cols = st.columns([1, 3, 1])
-            with cols[1]:
-                # Prefer a local file named `CodeRev.png` at repo root; fallback to a hosted placeholder
-                logo_path = "CodeRev.png"
-                if os.path.exists(logo_path):
-                    st.image(logo_path, width=420)
-                else:
-                    st.image("https://placehold.co/800x240?text=CodeRev+Demo", width=420)
-
-                st.markdown("<h3 style='text-align:center;color:var(--text)'>Welcome to CodeRev</h3>", unsafe_allow_html=True)
-
-        # keep splash visible for 3 seconds, then set flag and rerun to render main UI
-        time.sleep(3)
-        st.session_state['splash_shown'] = True
-        splash_container.empty()
-        st.experimental_rerun()
-
-    # Main header
     st.markdown("""
     <div class="main-header">
         <h1> CodeRev</h1>
@@ -473,90 +450,120 @@ def main():
                             all_feedback.append(feedback)
                             progress_bar.progress((i + 1) / (total_comments + 1))
 
-            st.markdown("---")
-            st.markdown("## 📊 Empathetic Review Report")
-            if 'results' in st.session_state:
-                results = st.session_state.results
+                        status_text.text("Generating holistic summary...")
+                        summary = reviewer.generate_holistic_summary(code_snippet, all_feedback, detected_language)
+                        progress_bar.progress(1.0)
+                        status_text.text("✅ Analysis complete!")
 
-                # Metric cards
-                mcol1, mcol2, mcol3, mcol4 = st.columns(4)
-                with mcol1:
-                    st.markdown(f"""
-                    <div class="metric-card">
-                        <h4>🔍 Language</h4>
-                        <div style="font-weight:700; font-size:18px;">{results['language'].title()}</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                with mcol2:
-                    harsh_comments = sum(1 for comment in results['comments'] if EmpatheticCodeReviewer("").analyze_comment_severity(comment) == "harsh")
-                    st.markdown(f"""
-                    <div class="metric-card">
-                        <h4>⚠️ Harsh</h4>
-                        <div style="font-weight:700; font-size:18px;">{harsh_comments}</div>
-                        <div style="color:var(--muted); font-size:12px;">Detected harsh comments</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                with mcol3:
-                    st.markdown(f"""
-                    <div class="metric-card">
-                        <h4>💬 Comments</h4>
-                        <div style="font-weight:700; font-size:18px;">{len(results['comments'])}</div>
-                        <div style="color:var(--muted); font-size:12px;">Total comments</div>
-                    </div>
-                    """, unsafe_allow_html=True)
-                with mcol4:
-                    st.markdown(f"""
-                    <div class="metric-card">
-                        <h4>✨ Improvements</h4>
-                        <div style="font-weight:700; font-size:18px;">{len(results['feedback'])}</div>
-                        <div style="color:var(--muted); font-size:12px;">Suggestions generated</div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                        st.session_state.results = {
+                            'code_snippet': code_snippet,
+                            'language': detected_language,
+                            'comments': comments,
+                            'feedback': all_feedback,
+                            'summary': summary
+                        }
+                except Exception as e:
+                    st.error(f"❌ Error: {str(e)}")
 
-                st.markdown("---")
-                st.markdown("### 💻 Original Code")
-                st.code(results['code_snippet'], language=results['language'])
+    # Results display
+    if 'results' in st.session_state:
+        st.markdown("---")
+        st.markdown("## 📊 Empathetic Review Report")
+        results = st.session_state.results
 
-                st.markdown("### 🤝 Constructive Feedback")
-                for i, (original_comment, feedback) in enumerate(zip(results['comments'], results['feedback']), 1):
-                    with st.expander(f"💡 Comment {i}: \"{original_comment[:60]}{'...' if len(original_comment) > 60 else ''}\"", expanded=True):
-                        left, right = st.columns([1,1])
-                        with left:
-                            st.markdown("**🤝 Positive Rephrasing:**")
-                            st.info(feedback.get('positive_rephrasing', '—'))
-                            st.markdown("**🧠 The 'Why':**")
-                            st.write(feedback.get('the_why', '—'))
-                        with right:
-                            st.markdown("**🔧 Suggested Improvement:**")
-                            st.code(feedback.get('suggested_improvement', ''), language=results['language'])
-                            st.markdown("**📚 Learn More:**")
-                            resource = feedback.get('resource_link', '')
-                            if isinstance(resource, str) and resource.startswith('http'):
-                                st.markdown(f"[📖 Documentation Link]({resource})")
-                            else:
-                                st.write(resource)
+        # Metric cards
+        mcol1, mcol2, mcol3, mcol4 = st.columns(4)
+        with mcol1:
+            st.markdown(f"""
+            <div class="metric-card">
+                <h4>🔍 Language</h4>
+                <div style="font-weight:700; font-size:18px;">{results['language'].title()}</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with mcol2:
+            harsh_comments = sum(1 for comment in results['comments'] if EmpatheticCodeReviewer("").analyze_comment_severity(comment) == "harsh")
+            st.markdown(f"""
+            <div class="metric-card">
+                <h4>⚠️ Harsh</h4>
+                <div style="font-weight:700; font-size:18px;">{harsh_comments}</div>
+                <div style="color:var(--muted); font-size:12px;">Detected harsh comments</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with mcol3:
+            st.markdown(f"""
+            <div class="metric-card">
+                <h4>💬 Comments</h4>
+                <div style="font-weight:700; font-size:18px;">{len(results['comments'])}</div>
+                <div style="color:var(--muted); font-size:12px;">Total comments</div>
+            </div>
+            """, unsafe_allow_html=True)
+        with mcol4:
+            st.markdown(f"""
+            <div class="metric-card">
+                <h4>✨ Improvements</h4>
+                <div style="font-weight:700; font-size:18px;">{len(results['feedback'])}</div>
+                <div style="color:var(--muted); font-size:12px;">Suggestions generated</div>
+            </div>
+            """, unsafe_allow_html=True)
 
-                st.markdown("### 🎉 Summary")
-                st.success(results['summary'])
+        st.markdown("---")
+        st.markdown("### 💻 Original Code")
+        st.code(results['code_snippet'], language=results['language'])
 
-                # Download
-                st.markdown("### 📥 Download Report")
-                markdown_content = f"# 🌟 Empathetic Code Review Report\n\nGenerated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n## Original Code ({results['language'].title()})\n\n```{results['language']}\n{results['code_snippet']}\n```\n\n## Constructive Feedback\n\n"
-                for i, (original_comment, feedback) in enumerate(zip(results['comments'], results['feedback']), 1):
-                    markdown_content += f"### 💡 Analysis of Comment {i}: \"{original_comment}\"\n\n**🤝 Positive Rephrasing:** {feedback.get('positive_rephrasing','')}\n\n**🧠 The 'Why':** {feedback.get('the_why','')}\n\n**🔧 Suggested Improvement:**\n```{results['language']}\n{feedback.get('suggested_improvement','')}\n```\n\n**📚 Learn More:** [{feedback.get('resource_link','')}]\n\n---\n\n"
-                markdown_content += f"## 🎉 Summary\n\n{results['summary']}\n\n*Happy coding! 🚀*\n"
-                filename = f"empathetic_review_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
-                st.download_button(label="📄 Download Markdown Report", data=markdown_content, file_name=filename, mime="text/markdown", use_container_width=True)
+        st.markdown("### 🤝 Constructive Feedback")
+        for i, (original_comment, feedback) in enumerate(zip(results['comments'], results['feedback']), 1):
+            with st.expander(f"💡 Comment {i}: \"{original_comment[:60]}{'...' if len(original_comment) > 60 else ''}\"", expanded=True):
+                left, right = st.columns([1,1])
+                with left:
+                    st.markdown("**🤝 Positive Rephrasing:**")
+                    st.info(feedback.get('positive_rephrasing', '—'))
+                    st.markdown("**🧠 The 'Why':**")
+                    st.write(feedback.get('the_why', '—'))
+                with right:
+                    st.markdown("**🔧 Suggested Improvement:**")
+                    st.code(feedback.get('suggested_improvement', ''), language=results['language'])
+                    st.markdown("**📚 Learn More:**")
+                    resource = feedback.get('resource_link', '')
+                    if isinstance(resource, str) and resource.startswith('http'):
+                        st.markdown(f"[📖 Documentation Link]({resource})")
+                    else:
+                        st.write(resource)
 
-                # --- Rubric scoring widget (helps you demonstrate scoring & innovation) ---
-                st.markdown("---")
-                # st.markdown("## 🧮 Self-Evaluation (Demo judge panel)")
-                # st.markdown commented out for now
+        st.markdown("### 🎉 Summary")
+        st.success(results['summary'])
+
+        # Download
+        st.markdown("### 📥 Download Report")
+        markdown_content = f"# 🌟 Empathetic Code Review Report\n\nGenerated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n## Original Code ({results['language'].title()})\n\n```{results['language']}\n{results['code_snippet']}\n```\n\n## Constructive Feedback\n\n"
+        for i, (original_comment, feedback) in enumerate(zip(results['comments'], results['feedback']), 1):
+            markdown_content += f"### 💡 Analysis of Comment {i}: \"{original_comment}\"\n\n**🤝 Positive Rephrasing:** {feedback.get('positive_rephrasing','')}\n\n**🧠 The 'Why':** {feedback.get('the_why','')}\n\n**🔧 Suggested Improvement:**\n```{results['language']}\n{feedback.get('suggested_improvement','')}\n```\n\n**📚 Learn More:** [{feedback.get('resource_link','')}]\n\n---\n\n"
+        markdown_content += f"## 🎉 Summary\n\n{results['summary']}\n\n*Happy coding! 🚀*\n"
+        filename = f"empathetic_review_{datetime.now().strftime('%Y%m%d_%H%M%S')}.md"
+        st.download_button(label="📄 Download Markdown Report", data=markdown_content, file_name=filename, mime="text/markdown", use_container_width=True)
+
+        # --- Rubric scoring widget (helps you demonstrate scoring & innovation) ---
+        st.markdown("---")
+        # st.markdown("## 🧮 Self-Evaluation (Demo judge panel)")
+        # colA, colB = st.columns(2)
+        # with colA:
+        #     f_score = st.slider("Functionality & Correctness (0-25)", 0, 25, 20)
+        #     ai_score = st.slider("AI Output & Prompting (0-45)", 0, 45, 36)
+        # with colB:
+        #     code_score = st.slider("Code Quality & Documentation (0-20)", 0, 20, 16)
+        #     innov_score = st.slider("Innovation & Stand Out (0-10)", 0, 10, 6)
+
+        # total = f_score + ai_score + code_score + innov_score
+        # st.markdown(f"**Total (weighted)**: <span style='font-weight:800; font-size:20px; color:var(--accent)'> {total} / 100</span>", unsafe_allow_html=True)
+        # if total >= 85:
+        #     st.success("🏆 Excellent — this would score highly in the judging rubric!")
+        # elif total >= 65:
+        #     st.info("👍 Strong — good job, consider adding an extra stand-out feature.")
+        # else:
+        #     st.warning("🔧 Needs work — focus on improving AI output depth and functionality.")
 
 if __name__ == "__main__":
     if 'sample_loaded' not in st.session_state:
         st.session_state.sample_loaded = False
-    # initialize splash flag (so splash shows only once per user session)
-    if 'splash_shown' not in st.session_state:
-        st.session_state.splash_shown = False
     main()
+
+
