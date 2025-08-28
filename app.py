@@ -8,8 +8,6 @@ from typing import Dict, List
 from datetime import datetime
 from types import SimpleNamespace
 
-
-import os
 import time
 import streamlit as st
 
@@ -40,34 +38,6 @@ def show_splash_once(timeout_seconds: int = 3, logo_filename: str = "CodeRev.png
 
     # Keep the splash visible for the timeout duration
     time.sleep(timeout_seconds)
-
-    # Mark splash as shown and clear container, then rerun to render main UI
-    st.session_state['splash_shown'] = True
-    splash_container.empty()
-
-    # It's safe to call experimental_rerun here because this function is executed
-    # inside Streamlit's script run (e.g., from within main()).
-    st.experimental_rerun()
-
-
-# Example usage: call this inside your main() before rendering other UI.
-def main():
-    # show splash only on first load
-    show_splash_once(timeout_seconds=3, logo_filename="CodeRev.png")
-
-    # --- rest of your UI code goes below ---
-    st.header("Main App UI")
-    st.write("Now the main app renders after the splash.")
-    # ... your existing UI code ...
-
-if __name__ == "__main__":
-    main()
-
-
-
-
-
-
 
 # --- Try importing Groq; provide a graceful fallback (mock) if not installed ---
 GroqAvailable = True
