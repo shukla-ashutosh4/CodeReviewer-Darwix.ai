@@ -9,8 +9,6 @@ from datetime import datetime
 from types import SimpleNamespace
 
 
-st.image("CodeRev.png", width=420)
-st.markdown("<h3 style='text-align:center;'>Welcome to CodeRev</h3>", unsafe_allow_html=True)
 
 
 # --- Try importing Groq; provide a graceful fallback (mock) if not installed ---
