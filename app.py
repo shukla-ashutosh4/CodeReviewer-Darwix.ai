@@ -8,36 +8,10 @@ from typing import Dict, List
 from datetime import datetime
 from types import SimpleNamespace
 
-import time
-import streamlit as st
 
-# ensure this is set once per session (keep this at module level)
-if 'splash_shown' not in st.session_state:
-    st.session_state['splash_shown'] = False
+st.image("CodeRev.png", width=420)
+st.markdown("<h3 style='text-align:center;'>Welcome to CodeRev</h3>", unsafe_allow_html=True)
 
-def show_splash_once(timeout_seconds: int = 3, logo_filename: str = "CodeRev.png"):
-    """
-    Show a centered splash image for `timeout_seconds` on the first load of the session.
-    After showing it, set session flag and rerun the script so main UI renders cleanly.
-    """
-    # Only run on first session load
-    if st.session_state.get('splash_shown', False):
-        return
-
-    # Create a temporary container for the splash
-    splash_container = st.empty()
-    with splash_container.container():
-        cols = st.columns([1, 3, 1])
-        with cols[1]:
-            if os.path.exists(logo_filename):
-                st.image(logo_filename, width=420)
-            else:
-                st.image("https://placehold.co/800x240?text=CodeRev+Demo", width=420)
-
-            st.markdown("<h3 style='text-align:center;'>Welcome to CodeRev</h3>", unsafe_allow_html=True)
-
-    # Keep the splash visible for the timeout duration
-    time.sleep(timeout_seconds)
 
 # --- Try importing Groq; provide a graceful fallback (mock) if not installed ---
 GroqAvailable = True
