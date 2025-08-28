@@ -8,6 +8,43 @@ from typing import Dict, List
 from datetime import datetime
 from types import SimpleNamespace
 
+
+import os
+import time
+import streamlit as st
+
+# ensure this is set once per session
+if 'splash_shown' not in st.session_state:
+    st.session_state['splash_shown'] = False
+
+def show_splash_then_continue():
+    """Show splash image for 3s on first load, then rerun to render main UI."""
+    if not st.session_state['splash_shown']:
+        splash = st.empty()
+        with splash.container():
+            cols = st.columns([1, 3, 1])
+            with cols[1]:
+                logo_path = "CodeRev.png"  # place this file next to app.py
+                if os.path.exists(logo_path):
+                    st.image(logo_path, width=420)
+                else:
+                    # fallback hosted image
+                    st.image("https://placehold.co/800x240?text=CodeRev+Demo", width=420)
+
+                st.markdown("<h3 style='text-align:center;'>Welcome to CodeRev</h3>", unsafe_allow_html=True)
+
+        # keep splash visible for 3 seconds, then clear and rerun
+        time.sleep(3)
+        st.session_state['splash_shown'] = True
+        splash.empty()
+        st.experimental_rerun()
+
+# Call this at the start of your main() before rendering the rest of the UI
+show_splash_then_continue()
+
+# ... rest of your app UI follows here ...
+
+
 # --- Try importing Groq; provide a graceful fallback (mock) if not installed ---
 GroqAvailable = True
 try:
