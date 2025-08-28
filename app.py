@@ -380,7 +380,7 @@ with st.sidebar:
 def main():
     st.markdown("""
     <div class="main-header">
-        <h1>🌟 Empathetic Code Reviewer</h1>
+        <h1> CodeRev</h1>
         <p><strong>Transforming Critical Feedback into Constructive Growth</strong></p>
         <p style="opacity:0.9;">Turn blunt comments into supportive, educational guidance using generative AI.</p>
     </div>
