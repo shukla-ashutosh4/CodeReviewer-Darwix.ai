@@ -1,4 +1,4 @@
-# 🌟 CodeRev
+# CodeRev
 
 **Web app:** [CodeRev](https://coderev.streamlit.app/#code-rev)
 
