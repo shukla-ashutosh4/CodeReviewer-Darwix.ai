@@ -355,7 +355,7 @@ def create_download_link(content: str, filename: str, link_text: str) -> str:
     return f'<a href="data:file/markdown;base64,{b64}" download="{filename}" class="download-link">{link_text}</a>'
 
 # ------------------- Sidebar Rubric & Config -------------------
-# with st.sidebar:
+with st.sidebar:
 #     st.markdown("<div class='sidebar-info'><h3 class='badge'>Mission 1</h3><strong>Empathetic Code Reviewer</strong></div>", unsafe_allow_html=True)
 #     st.markdown("## 🧭 Hackathon Rubric (Quick View)")
 #     st.markdown("<div class='rubric-weight'>Functionality & Correctness — 25%</div><div class='rubric-weight'>AI Output & Prompting — 45%</div><div class='rubric-weight'>Code Quality — 20%</div><div class='rubric-weight'>Innovation — 10%</div>", unsafe_allow_html=True)
