@@ -129,6 +129,6 @@ MIT License — feel free to reuse and adapt.
 
 ## Author
 
-Created by the project contributor.
+Created by [Ashutosh Shukla](https://www.linkedin.com/in/ashutosh-shukla4)
 
 If you want any changes to the README (add badges, contributor list, or a demo GIF), tell me what to include and I'll update it in the canvas.
